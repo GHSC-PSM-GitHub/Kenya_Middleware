@@ -1,0 +1,43 @@
+<section class="content-menu" th:fragment="sidenavigation">
+        <ul class="app-menu">
+                <li><a class="app-menu__item active" href="home"><i
+                            class="app-menu__icon fa fa-dashboard"></i><span
+                            class="app-menu__label">Dashboard</span></a></li>
+                <li><a class="app-menu__item active" href="accountability"><i
+                            class="app-menu__icon fa fa-dashboard"></i><span
+                            class="app-menu__label">Product Accountability</span></a></li>
+                <li><a class="app-menu__item active" href="sohexpectedperproduct"><i
+                            class="app-menu__icon fa fa-dashboard"></i><span
+                            class="app-menu__label">SOH Meets Expected Balance</span></a></li>
+                <li><a class="app-menu__item active" href="sohexpectedperfacility"><i
+                            class="app-menu__icon fa fa-dashboard"></i><span
+                            class="app-menu__label">Facilities Meeting Expectation</span></a></li>
+                 <li><a class="app-menu__item active" href="stockstatusperproduct"><i
+                            class="app-menu__icon fa fa-dashboard"></i><span
+                            class="app-menu__label">Stock Status Report - Product</span></a></li> 
+                 <li><a class="app-menu__item active" href="stockstatusperfacility"><i
+                            class="app-menu__icon fa fa-dashboard"></i><span
+                            class="app-menu__label">Stock Status Report - Facilities</span></a></li>  
+                 <li><a class="app-menu__item active" href="proportionoffacilitiesmatchingdata"><i
+                            class="app-menu__icon fa fa-dashboard"></i><span
+                            class="app-menu__label">Proportion of Facilities with matching data</span></a></li>
+                            <li><a class="app-menu__item" href="#" data-toggle="modal"
+                       data-target="#modalRegisterForm"><i
+                           class="app-menu__icon fa fa-cogs"></i><span class="app-menu__label">Settings</span></a></li>
+        </ul>
+</section>
+
+<section class="content-menu" th:fragment="headernavigation">
+    <header th:class="${bothconnected} ? 'app-header' : 'app-header-error'">
+        <a class="app-header__logo" href="">Hand Shake</a>
+        <ul class="app-nav">
+            <!-- User Menu-->
+            <li class="dropdown"><a class="app-nav__item" href="#" data-toggle="dropdown" aria-label="Open Profile Menu"><i class="fa fa-user fa-lg"></i></a>
+                <ul class="dropdown-menu settings-menu dropdown-menu-right">
+                    <li><a class="dropdown-item" href="changepassword"><i class="fa fa-cog fa-lg"></i> Change Password</a></li>
+                    <li><a class="dropdown-item" href="logout"><i class="fa fa-sign-out fa-lg"></i> Logout</a></li>
+                </ul>
+            </li>
+        </ul>
+    </header>
+</section>

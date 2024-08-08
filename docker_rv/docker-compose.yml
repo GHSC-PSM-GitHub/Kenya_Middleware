@@ -1,0 +1,44 @@
+version: '3'
+
+services:
+  tomcat:
+    container_name: odkdhis
+    build: ./docker/tomcat
+    networks:
+      - datalink
+    depends_on:
+      - pgdb
+    ports:
+      - "8080:8080"
+  pgdb:
+    container_name: postgres_db
+    image: postgres
+    restart: always
+    volumes:
+      - /root/odkdhisdata:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: username
+      POSTGRES_PASSWORD: Password@123
+      POSTGRES_DB: odkdhis
+    ports:
+      - 5430:5432
+    networks:
+      - datalink
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    environment:
+      - "PGADMIN_DEFAULT_EMAIL=simiyuwdan@gmail.com"
+      - "PGADMIN_DEFAULT_PASSWORD=simiyu@123"
+    ports:
+      - "8000:80"
+    volumes:
+      - /root/pgadmin:/var/lib/pgadmin
+    depends_on:
+      - pgdb
+    networks:
+      - datalink
+      
+networks:
+  datalink:
+    driver: bridge
+

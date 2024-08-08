@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>ODK >> DHIS 2</title>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Main CSS-->
+        <link rel="stylesheet" type="text/css" th:href="@{css/main.css}">
+        <!-- Font-icon css-->
+        <link rel="stylesheet" type="text/css"
+              href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+        <!-- The fav icon -->
+        <link rel="shortcut icon" th:href="@{images/favicon.ico}">
+    </head>
+    <body class="app sidebar-mini rtl">
+        <!-- Navbar-->
+          <header th:class="${bothconnected} ? 'app-header' : 'app-header-error'">
+        <a class="app-header__logo" href="">Hand Shake</a>
+        <ul class="app-nav">
+            <!-- User Menu-->
+            <li class="dropdown"><a class="app-nav__item" href="#" data-toggle="dropdown" aria-label="Open Profile Menu"><i class="fa fa-user fa-lg"></i></a>
+                <ul class="dropdown-menu settings-menu dropdown-menu-right">
+                    <li><a class="dropdown-item" href="changepassword"><i class="fa fa-cog fa-lg"></i> Change Password</a></li>
+                    <li><a class="dropdown-item" href="logout"><i class="fa fa-sign-out fa-lg"></i> Logout</a></li>
+                </ul>
+            </li>
+        </ul>
+    </header>
+        <!-- Sidebar menu-->
+        <div class="app-sidebar__overlay" data-toggle="sidebar"></div>
+        
+        <aside class="app-sidebar">
+                <section class="content-menu" th:insert="sidebar::sidenavigation"></section>
+        </aside>
+        <main class="app-content">
+            <div class="app-title">
+                <div>
+                    <h1 th:text="${bothconnected} ? 'Dashboard' : 'No Server Connection'">
+                        <i class="fa fa-dashboard"></i>
+                    </h1>
+                    <p>Integrate ODK and DHIS 2</p>
+                    <div class="tile-title-w-btn">
+                        <p>
+                            <a class="btn btn-primary icon-btn" id="demoSwal" href="#">
+                                <i class="fa fa-send"></i>Send Unsynced Data Now </a>
+
+                            <a class="btn btn-primary icon-btn" id="updateOrgans" href="#">
+                                <i class="fa fa-send"></i>Update OrgUnits </a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 col-lg-6">
+                    <div class="widget-small warning coloured-icon">
+                        <i class="icon fa fa-files-o fa-3x"></i>
+                        <div class="info">
+                            <h4>Available For Next Dispatch</h4>
+                            <p>
+                                <b th:text="${dataNOTSend}"></b>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-6">
+                    <div class="widget-small info coloured-icon">
+                        <i class="icon fa fa-thumbs-o-up fa-3x"></i>
+                        <div class="info">
+                            <h4>Previously Send From ODK >> DHIS 2</h4>
+                            <p>
+                                <b th:text="${dataSend}"></b>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="tile">
+                        <div class="tile-title-w-btn">
+                            <h3 class="title" th:text="${summaryOrgUnit}"></h3>
+                            <p>
+                                <a class="btn btn-primary icon-btn" href="#" data-toggle="modal" data-target="#filterData">
+                                    <i class="fa fa-send"></i>Filter</a>
+                            </p>
+                        </div>
+                        <div class="tile-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover table-bordered" id="sampleTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Area Assesed (max score)</th>
+                                            <th>max score</th>
+                                            <th>Numerator</th>
+                                            <th>Denominator</th>
+                                            <th>% Score</th>
+                                            <th>Performance Category</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr th:each="data, iStat: ${availableData}"
+                                            th:style="${iStat.odd} ? 'background-color: gray' : 'background-color: white;'">
+                                            <td th:text="${data.formName}"></td>
+                                            <td th:text="${data.maxScore}"></td>
+                                            <td th:text="${data.numerator}"></td>
+                                            <td th:text="${data.denominator}"></td>
+                                            <td th:text="${data.score}"></td>
+                                            <td th:text="${data.performanceCategory}"></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- *********************  SETTINGS FORM  ********************************************************* -->
+          <section class="content-menu" th:insert="sharedsections::serversetting"></section>
+            <!-- *********************  END OF SETTINGS FORM  ********************************************************* -->
+
+            <!-- *******************************  DATA FILTER  *************************************** -->
+            <div class="modal fade" id="filterData" tabindex="-1"
+                 role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header text-center">
+                            <h4 class="modal-title w-100 font-weight-bold">FILTER</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+
+                        <form class="grid-form" th:action="@{/filtered}"
+                              th:object="${summaryData}" method="get" action="#">
+                            <div class="modal-body mx-3">
+                                <fieldset>
+                                    <legend>Select Facility Code</legend>
+                                    <div class='row'>
+                                        <div class='col-sm-4'>
+                                            <div class='form-group'>
+                                                <label for="odkuser">Organisation Unit Code</label> 
+                                                <input class="form-control" name="orgUnitCode" th:field="*{orgUnitCode}" required="true" type="text" />
+                                            </div>
+                                        </div>
+                                        <div class='col-sm-4'>
+                                            <div class='form-group'>
+                                                <label for="odkuser">Select From Date</label> 
+                                                <input class="form-control" name="fromDate" th:field="*{fromDate}" required="true" type="date" />
+                                            </div>
+                                        </div>
+                                        <div class='col-sm-4'>
+                                            <div class='form-group'>
+                                                <label for="odkuser">Select To Date</label> 
+                                                <input class="form-control" name="toDate" th:field="*{toDate}" required="true" type="date" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </fieldset>
+
+
+                            </div>
+                            <div class="modal-footer d-flex justify-content-center">
+                                <button class="btn btn-primary" type="submit">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <!-- *******************************  END OF DATA FILTER  *************************************** -->
+
+        </main>
+
+        <!-- Essential javascripts for application to work-->
+        <script th:src="@{js/jquery-3.3.1.min.js}"></script>
+        <script th:src="@{js/popper.min.js}"></script>
+        <script th:src="@{js/bootstrap.min.js}"></script>
+        <script th:src="@{js/main.js}"></script>
+        <!-- The javascript plugin to display page loading on top-->
+        <script th:src="@{js/plugins/pace.min.js}"></script>
+        <script th:src="@{js/plugins/jquery.dataTables.min.js}"></script>
+        <script th:src="@{js/plugins/dataTables.bootstrap.min.js}"></script>
+        <script th:src="@{js/plugins/bootstrap-notify.min.js}"></script>
+        <script th:src="@{js/plugins/sweetalert.min.js}"></script>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('#sampleTable').DataTable({
+                    "ordering": false
+                });
+                /*
+                 $('#orgUnitFilter').DataTable().$('.checked').map(function ()
+                 {
+                 return $(this).closest('tr');
+                 //want to get attribute
+                 var id = $(this).closest('tr').find('td.Select').attr('id');
+                 });
+                 */
+                $('#demoSwal').click(function () {
+                    swal({
+                        title: "Are you sure?",
+                        text: "Sending Data automatically is usually Scheduled for after every 24 hours without human intervention!",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Yes, Send Now!",
+                        cancelButtonText: "No, Cancel!",
+                        closeOnConfirm: false,
+                        closeOnCancel: false
+                    }, function (isConfirm) {
+                        var connected = "[[${bothconnected}]]";
+                        if (connected !== 'true') {
+                            swal("Error!", "No Server Connection !", "error");
+                            return;
+                        }
+                        if (isConfirm) {
+                            swal("Sending!", "Click Ok To Start Sending Data in the Background. Be Patient, it will take a few minutes", "success");
+
+                            $.ajax({
+                                url: "sendData",
+                                type: 'post',
+                                data: null,
+                                dataType: 'json',
+                                success: function (json) {
+                                    if (json.success)
+                                    {
+                                        setTimeout(function () {
+                                            window.location.href = '';
+                                        }, 2000);
+                                    }
+                                }
+                            });
+
+                        } else {
+                            swal("Cancelled", "Data Will be send in the next Scheduled time", "error");
+                        }
+                    });
+                });
+
+                $('#updateOrgans').click(function () {
+                    swal({
+                        title: "Confirm",
+                        text: "Are You sure with this?",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Yes",
+                        cancelButtonText: "No",
+                        closeOnConfirm: false,
+                        closeOnCancel: false
+                    }, function (isConfirm) {
+                        if (isConfirm) {
+                            swal("Sending!", "Click Ok To Start Save Data.", "success");
+                            $.ajax({
+                                url: "uploadOrganizationUnits",
+                                type: 'post',
+                                data: null,
+                                dataType: 'json',
+                                success: function (json) {
+                                    if (json.success)
+                                    {
+                                        setTimeout(function () {
+                                            window.location.href = '';
+                                        }, 2000);
+                                    }
+                                }
+                            });
+
+                        } else {
+                            swal("Cancelled", "Data Will be send in the next Scheduled time", "error");
+                        }
+                    });
+                });
+
+                $('#filterfffData').click(function () {
+                    swal({
+                        title: "Confirm",
+                        text: "Are You sure with this?",
+                        type: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Yes",
+                        cancelButtonText: "No",
+                        closeOnConfirm: false,
+                        closeOnCancel: false
+                    }, function (isConfirm) {
+                        if (isConfirm) {
+                            swal("Sending!", "Click Ok To Start Save Data.", "success");
+                            $.ajax({
+                                url: "uploadOrganizationUnits",
+                                type: 'post',
+                                data: null,
+                                dataType: 'json',
+                                success: function (json) {
+                                    if (json.success)
+                                    {
+                                        setTimeout(function () {
+                                            window.location.href = '';
+                                        }, 2000);
+                                    }
+                                }
+                            });
+
+                        } else {
+                            swal("Cancelled", "Data Will be send in the next Scheduled time", "error");
+                        }
+                    });
+                });
+            });
+        </script>
+
+    </body>
+</html>
